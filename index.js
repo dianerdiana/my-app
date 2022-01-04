@@ -61,7 +61,7 @@ app.use(flash())
 //     res.send("Hello World") // only send text
 // })
 
-app.get('/home', function(req, res) {
+app.get('/', function(req, res) {
 
     let query = `SELECT * FROM tb_experience`
 
