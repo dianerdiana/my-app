@@ -159,7 +159,7 @@ app.get('/delete-blog/:id', function(req, res) {
   })
 })
 
-app.get('/edit-blog/:id', function(req, res) {
+app.get('/edit-blog/:id', upload.single('image'), function(req, res) {
     
     let id = req.params.id
     let query = `SELECT * FROM tb_blog WHERE id = ${id}`
@@ -176,9 +176,21 @@ app.get('/edit-blog/:id', function(req, res) {
 
 app.post('/edit-blog/:id', function(req, res) {
 
+    if(!req.session.user) {
+        req.flash('danger', 'Please Login!')
+        return res.redirect('/add-blog')
+      }
+    
+      if(!req.file.filename) {
+        req.flash('danger', 'Please insert all fields!')
+        return res.redirect('/add-blog')
+      }
+
     let id = req.params.id
     let data = req.body
-    let query = `UPDATE tb_blog SET title = '${data.title}', content = '${data.content}' WHERE id = ${id}`
+    let image = req.file.filename
+
+    let query = `UPDATE tb_blog SET title = '${data.title}', content = '${data.content}', image = '${image}' WHERE id = ${id}`
 
     db.connect(function(err, client, done){
         if (err) throw err
@@ -274,10 +286,6 @@ app.post('/login', function(req, res){
           }
       })
   })
-})
-
-app.post('/logout', function(req, res){
-
 })
 
 // to bind and listen the connections on the specified host and hosting
